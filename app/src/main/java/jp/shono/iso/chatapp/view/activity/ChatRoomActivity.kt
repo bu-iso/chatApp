@@ -9,7 +9,6 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -153,7 +152,6 @@ class ChatMessageRecyclerViewAdapter(val context: Context) : RecyclerView.Adapte
     fun refresh(newChatMessageList: MutableList<chatMessage>?) {
         newChatMessageList?.also {
             chatMessageList.apply {
-                Log.d("clickinfo", "itの数は" + it.size.toString())
                 clear()
                 addAll(it)
             }

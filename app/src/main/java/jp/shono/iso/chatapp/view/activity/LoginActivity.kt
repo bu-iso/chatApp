@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.google.android.gms.tasks.OnCompleteListener
@@ -18,9 +17,9 @@ import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var mAuth: FirebaseAuth
-    private lateinit var mCreateAccountListener: OnCompleteListener<AuthResult>
-    private lateinit var mLoginListener: OnCompleteListener<AuthResult>
+    private lateinit var auth: FirebaseAuth
+    private lateinit var createAccountListener: OnCompleteListener<AuthResult>
+    private lateinit var loginListener: OnCompleteListener<AuthResult>
     private var isCreateAccount = false
     private  lateinit var db:FirebaseFirestore
 
@@ -35,11 +34,11 @@ class LoginActivity : AppCompatActivity() {
         }
 
         // FirebaseAuthのオブジェクトを取得する
-        mAuth = FirebaseAuth.getInstance()
+        auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
         // アカウント作成処理のリスナー
-        mCreateAccountListener = OnCompleteListener { task ->
+        createAccountListener = OnCompleteListener { task ->
             if (task.isSuccessful) {
                 // 成功した場合
                 // ログインを行う
@@ -59,10 +58,10 @@ class LoginActivity : AppCompatActivity() {
         }
 
         // ログイン処理のリスナー
-        mLoginListener = OnCompleteListener { task ->
+        loginListener = OnCompleteListener { task ->
             if (task.isSuccessful) {
                 // 成功した場合
-                val user = mAuth.currentUser
+                val user = auth.currentUser
 
                 if (isCreateAccount) {
                     // アカウント作成の時は表示名をFirebaseに保存する
@@ -84,11 +83,8 @@ class LoginActivity : AppCompatActivity() {
                             .get()
                             .addOnSuccessListener {documents ->
                                 saveName("${documents.first().data?.get("name")}")
-                                Log.d("firebasetest", "${documents.first().data?.get("name")}")
                             }
-                            .addOnFailureListener {
-                                Log.d("firebasetest", it.toString())
-                            }
+                            .addOnFailureListener {}
                     }
                 }
 
@@ -151,7 +147,7 @@ class LoginActivity : AppCompatActivity() {
         progressBar.visibility = View.VISIBLE
 
         // アカウントを作成する
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(mCreateAccountListener)
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(createAccountListener)
     }
 
     private fun login(email: String, password: String) {
@@ -159,7 +155,7 @@ class LoginActivity : AppCompatActivity() {
         progressBar.visibility = View.VISIBLE
 
         // ログインする
-        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(mLoginListener)
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(loginListener)
     }
 
     private fun saveName(name: String) {

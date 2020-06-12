@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.lifecycle.Observer
@@ -70,7 +69,6 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this).get(ChatRoomListViewModel::class.java).apply {
             initChatRoomList()
             idList.observe(this@MainActivity, Observer {
-                Log.d("clickinfo", "アダプタ更新")
                 customAdapter.refresh(chatRoomList.value, it)
             })
         }
@@ -84,7 +82,6 @@ class MainActivity : AppCompatActivity() {
 
     fun initButton() {
         fab.setOnClickListener{
-            Log.d("clickinfo", "クリックはできている")
             val intent = Intent(this@MainActivity, CreateRoomActivity::class.java)
             startActivity(intent)
         }
@@ -99,7 +96,6 @@ class MainActivity : AppCompatActivity() {
 
         customAdapter.setOnItemClickListener(object : ChatRoomListRecyclerViewAdapter.OnItemClickListener{
             override fun onItemClickListener(id: String) {
-                Log.d("clickinfo", id)
                 val intent = Intent(this@MainActivity, ChatRoomActivity::class.java)
                 intent.putExtra("roomId", id)
                 startActivity(intent)

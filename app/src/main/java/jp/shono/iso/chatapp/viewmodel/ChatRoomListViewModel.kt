@@ -1,7 +1,6 @@
 package jp.shono.iso.chatapp.viewmodel
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FirebaseFirestore
@@ -25,12 +24,10 @@ class ChatRoomListViewModel(application: Application) : AndroidViewModel(applica
                     idList.value?.clear()
                     val newRoomList = mutableListOf<chatRoom>()
                     val newIdList = mutableListOf<String>()
-                    Log.d("clickinfo", "データ受信")
                     snapshot.documents.forEach { document ->
                         val chatRoom = chatRoom(document.get("uid").toString(), document.get("title").toString(), document.get("datetime").toString().toLong())
                         newRoomList.add(chatRoom)
                         newIdList.add(document.id)
-                        Log.d("clickinfo", document.get("title").toString())
                     }
                     chatRoomList.postValue(newRoomList)
                     idList.postValue(newIdList)

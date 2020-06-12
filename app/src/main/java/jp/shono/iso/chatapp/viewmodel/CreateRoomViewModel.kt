@@ -1,7 +1,6 @@
 package jp.shono.iso.chatapp.viewmodel
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
