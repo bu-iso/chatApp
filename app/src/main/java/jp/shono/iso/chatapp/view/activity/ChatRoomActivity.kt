@@ -1,10 +1,12 @@
 package jp.shono.iso.chatapp.view.activity
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -23,6 +25,7 @@ import com.bumptech.glide.Registry
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.module.AppGlideModule
 import com.firebase.ui.storage.images.FirebaseImageLoader
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -169,6 +172,7 @@ class ChatMessageRecyclerViewAdapter(val context: Context) : RecyclerView.Adapte
         return ChatMessageViewHolder(inflate)
     }
 
+    @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: ChatMessageViewHolder, position: Int) {
         val item = chatMessageList.get(position)
         holder.apply {
@@ -197,6 +201,11 @@ class ChatMessageRecyclerViewAdapter(val context: Context) : RecyclerView.Adapte
                 .addOnFailureListener {
                     userNameView.setText("不明")
                 }
+            if (FirebaseAuth.getInstance().currentUser?.uid.equals(item.uid)) {
+                itemView.setBackgroundColor(Color.CYAN)
+            } else {
+                itemView.setBackgroundColor(Color.WHITE)
+            }
         }
     }
 
