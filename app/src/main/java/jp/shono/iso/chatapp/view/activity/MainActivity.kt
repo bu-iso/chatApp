@@ -2,6 +2,7 @@ package jp.shono.iso.chatapp.view.activity
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.*
@@ -151,6 +152,11 @@ class ChatRoomListRecyclerViewAdapter(val context: Context) : RecyclerView.Adapt
                 .addOnFailureListener {
                     userNameView.setText("不明")
                 }
+            if (FirebaseAuth.getInstance().currentUser?.uid.equals(item.uid)) {
+                itemView.setBackgroundColor(Color.CYAN)
+            } else {
+                itemView.setBackgroundColor(Color.WHITE)
+            }
             this.itemView.setOnClickListener{
                 listener.onItemClickListener(idList.get(position))
             }
