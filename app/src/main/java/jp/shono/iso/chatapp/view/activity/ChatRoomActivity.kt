@@ -1,10 +1,12 @@
 package jp.shono.iso.chatapp.view.activity
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -23,11 +25,14 @@ import com.bumptech.glide.Registry
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.module.AppGlideModule
 import com.firebase.ui.storage.images.FirebaseImageLoader
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import jp.shono.iso.chatapp.R
 import jp.shono.iso.chatapp.databinding.ActivityChatRoomBinding
 import jp.shono.iso.chatapp.model.chatMessage
+import jp.shono.iso.chatapp.model.userData
 import jp.shono.iso.chatapp.viewmodel.ChatRoomViewModel
 import kotlinx.android.synthetic.main.activity_chat_room.*
 import java.io.InputStream
@@ -146,8 +151,9 @@ class ChatRoomActivity : AppCompatActivity() {
 }
 
 class ChatMessageRecyclerViewAdapter(val context: Context) : RecyclerView.Adapter<ChatMessageViewHolder>() {
-    val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
+    val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.JAPAN)
     var chatMessageList = mutableListOf<chatMessage>()
+    val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
     fun refresh(newChatMessageList: MutableList<chatMessage>?) {
         newChatMessageList?.also {
@@ -166,6 +172,7 @@ class ChatMessageRecyclerViewAdapter(val context: Context) : RecyclerView.Adapte
         return ChatMessageViewHolder(inflate)
     }
 
+    @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: ChatMessageViewHolder, position: Int) {
         val item = chatMessageList.get(position)
         holder.apply {
@@ -184,7 +191,21 @@ class ChatMessageRecyclerViewAdapter(val context: Context) : RecyclerView.Adapte
                 imageView.visibility = View.GONE
             }
             dateView.setText(simpleDateFormat.format(item.datetime))
-            userNameView.setText((item.uid))
+            db.collection("users")
+                .whereEqualTo(userData::uid.name, item.uid)
+                .limit(1)
+                .get()
+                .addOnSuccessListener { documents ->
+                    userNameView.setText("${documents.first().data?.get("name")}")
+                }
+                .addOnFailureListener {
+                    userNameView.setText("不明")
+                }
+            if (FirebaseAuth.getInstance().currentUser?.uid.equals(item.uid)) {
+                itemView.setBackgroundColor(Color.CYAN)
+            } else {
+                itemView.setBackgroundColor(Color.WHITE)
+            }
         }
     }
 
