@@ -11,6 +11,7 @@ import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
@@ -46,6 +47,9 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
                     }
                     // changesは新規メッセージのみであることが前提
                     snapshot.documentChanges.forEach {
+                        if (it.type != DocumentChange.Type.ADDED) {
+                            return@forEach
+                        }
                         val document = it.document
                         val chatMessage = chatMessage(
                             document.get(chatMessage::uid.name).toString(),
