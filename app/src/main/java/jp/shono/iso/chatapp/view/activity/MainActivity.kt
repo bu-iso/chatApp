@@ -11,8 +11,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import jp.shono.iso.chatapp.R
 import jp.shono.iso.chatapp.model.chatRoom
+import jp.shono.iso.chatapp.model.userData
 import jp.shono.iso.chatapp.viewmodel.ChatRoomListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -106,9 +108,10 @@ class MainActivity : AppCompatActivity() {
 
 class ChatRoomListRecyclerViewAdapter(val context: Context) : RecyclerView.Adapter<ChatRoomListViewHolder>() {
     lateinit var listener: OnItemClickListener
-    val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
+    val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.JAPAN)
     private val chatRoomList = mutableListOf<chatRoom>()
     private val idList = mutableListOf<String>()
+    val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
     fun refresh(newChatRoomList: MutableList<chatRoom>?, newIdList: MutableList<String>?) {
         newChatRoomList?.also {
@@ -138,7 +141,16 @@ class ChatRoomListRecyclerViewAdapter(val context: Context) : RecyclerView.Adapt
         holder.apply {
             titleView.setText(item.title)
             dateView.setText(simpleDateFormat.format(item.datetime))
-            userNameView.setText((item.uid))
+            db.collection("users")
+                .whereEqualTo(userData::uid.name, item.uid)
+                .limit(1)
+                .get()
+                .addOnSuccessListener { documents ->
+                    userNameView.setText("${documents.first().data?.get("name")}")
+                }
+                .addOnFailureListener {
+                    userNameView.setText("不明")
+                }
             this.itemView.setOnClickListener{
                 listener.onItemClickListener(idList.get(position))
             }
