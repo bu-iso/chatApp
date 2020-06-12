@@ -13,23 +13,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <ScrollView
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1">
-            <LinearLayout
-                android:orientation="vertical"
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/chatMessageRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-                    android:id="@+id/chatMessageRecyclerView" />
-
-            </LinearLayout>
-        </ScrollView>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,20 +38,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:text="画像"/>
+                android:text="画像" />
+
             <EditText
                 android:id="@+id/chatBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@={editMessage}"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:text="@={editMessage}" />
+
             <Button
                 android:id="@+id/doneButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:enabled="@{editMessage.length() > 0, default = false}"
-                android:text="送信"/>
+                android:text="送信" />
         </LinearLayout>
     </LinearLayout>
 </layout>
