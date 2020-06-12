@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "344740917427",
+    "firebase_url": "https://chatapp-55c59.firebaseio.com",
+    "project_id": "chatapp-55c59",
+    "storage_bucket": "chatapp-55c59.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:344740917427:android:33a84303e66141564d80c6",
+        "android_client_info": {
+          "package_name": "jp.shono.iso.chatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "344740917427-bsb74r3lulji0cho6sdrikbjcndv3q6o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWpG2NtogtVoAcgGhqOi4b0RMLtdYggKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "344740917427-bsb74r3lulji0cho6sdrikbjcndv3q6o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

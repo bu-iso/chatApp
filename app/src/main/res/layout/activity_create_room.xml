@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".view.activity.CreateRoomActivity">
+
+    <data>
+        <variable name="roomTitle" type="androidx.lifecycle.MutableLiveData&lt;String>" />
+        <import type="android.view.View" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/questionEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ルーム名" />
+
+        <EditText
+            android:id="@+id/nameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/questionEditText"
+            android:text="@={roomTitle}"
+            android:hint="ルーム名を設定しよう" />
+
+        <Button
+            android:id="@+id/doneButton"
+            android:layout_width="96dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/nameEditText"
+            android:layout_alignParentRight="true"
+            android:text="決定" />
+
+    </RelativeLayout>
+
+</layout>
