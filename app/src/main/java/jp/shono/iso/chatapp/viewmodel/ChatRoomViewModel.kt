@@ -25,6 +25,7 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
     var pictureUri: Uri? = null
     lateinit var uid: String
     var isFirstLoad = true
+    var isFullLoaded = false
     val chatMessageList = MutableLiveData<MutableList<chatMessage>>()
     private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
@@ -87,7 +88,7 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun loadMessages(datetime:Long) {
-        if (isFirstLoad) {
+        if (isFirstLoad || isFullLoaded) {
             return
         }
         db.collection("chatRoom")
@@ -98,6 +99,10 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
             .limit(10)
             .get()
             .addOnSuccessListener { snapshot ->
+                if (snapshot.documents.size.equals(0)) {
+                    isFullLoaded = true
+                    return@addOnSuccessListener
+                }
                 val newMessageList = mutableListOf<chatMessage>()
                 chatMessageList.value?.also {
                     newMessageList.addAll(it)

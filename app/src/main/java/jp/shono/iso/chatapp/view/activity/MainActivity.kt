@@ -95,6 +95,22 @@ class MainActivity : AppCompatActivity() {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = customAdapter
+
+            addOnScrollListener(object: RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+
+                    val visibleItemCount = layoutManager.childCount
+                    val totalItemCount = layoutManager.itemCount
+                    val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
+                    if (pastVisibleItems + visibleItemCount >= totalItemCount) {
+                        viewModel.chatRoomList.value?.also {
+                            viewModel.loadChatRoom(it.last().datetime)
+                        }
+                    }
+                }
+            })
         }
 
         customAdapter.setOnItemClickListener(object : ChatRoomListRecyclerViewAdapter.OnItemClickListener{
