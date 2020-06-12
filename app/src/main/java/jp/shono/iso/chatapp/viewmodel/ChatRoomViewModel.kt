@@ -127,8 +127,8 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
         contentResolver: ContentResolver
     ) {
         if (resultCode != Activity.RESULT_OK) {
-            if (pictureUri != null) {
-                contentResolver.delete(pictureUri!!, null, null)
+            pictureUri?.also {
+                contentResolver.delete(it, null, null)
                 pictureUri = null
             }
             return
