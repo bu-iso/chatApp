@@ -75,6 +75,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private fun initLayout() {
         initButton()
         initRecyclerView()
+        initSwipeRefreshLayout()
     }
 
     private fun initButton() {
@@ -101,6 +102,16 @@ class ChatRoomActivity : AppCompatActivity() {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(this@ChatRoomActivity)
             adapter = customAdapter
+        }
+    }
+
+    private fun initSwipeRefreshLayout() {
+        swipeRefreshLayout.setOnRefreshListener {
+            viewModel.chatMessageList.value?.also {
+                val oldestDatetime:Long = it.get(0).datetime
+                viewModel.loadMessages(oldestDatetime)
+                swipeRefreshLayout.isRefreshing = false
+            }
         }
     }
 

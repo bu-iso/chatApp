@@ -12,6 +12,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import jp.shono.iso.chatapp.model.chatMessage
 import java.io.ByteArrayOutputStream
@@ -22,6 +23,7 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
     var roomId = ""
     var pictureUri: Uri? = null
     lateinit var uid: String
+    var isFirstLoad = true
     val chatMessageList = MutableLiveData<MutableList<chatMessage>>()
     private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
@@ -37,10 +39,14 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
                 if (e != null) {
                     return@addSnapshotListener
                 }
-                if (snapshot != null) {
-                    chatMessageList.value?.clear()
+                if (snapshot != null && !isFirstLoad) {
                     val newMessageList = mutableListOf<chatMessage>()
-                    snapshot.documents.forEach { document ->
+                    chatMessageList.value?.also {
+                        newMessageList.addAll(it)
+                    }
+                    // changesは新規メッセージのみであることが前提
+                    snapshot.documentChanges.forEach {
+                        val document = it.document
                         val chatMessage = chatMessage(
                             document.get(chatMessage::uid.name).toString(),
                             document.get(chatMessage::text.name).toString(),
@@ -52,6 +58,57 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
                     newMessageList.sortBy { it.datetime }
                     chatMessageList.postValue(newMessageList)
                 }
+            }
+        db.collection("chatRoom")
+            .document(roomId)
+            .collection("messages")
+            .orderBy("datetime", Query.Direction.DESCENDING)
+            .limit(10)
+            .get()
+            .addOnSuccessListener {
+                val newMessageList = mutableListOf<chatMessage>()
+                it.documents.forEach { document ->
+                    val chatMessage = chatMessage(
+                        document.get(chatMessage::uid.name).toString(),
+                        document.get(chatMessage::text.name).toString(),
+                        document.get(chatMessage::isImage.name).toString().toBoolean(),
+                        document.get(chatMessage::datetime.name).toString().toLong()
+                    )
+                    newMessageList.add(chatMessage)
+                }
+                newMessageList.sortBy { it.datetime }
+                chatMessageList.postValue(newMessageList)
+                isFirstLoad = false
+            }
+    }
+
+    fun loadMessages(datetime:Long) {
+        if (isFirstLoad) {
+            return
+        }
+        db.collection("chatRoom")
+            .document(roomId)
+            .collection("messages")
+            .whereLessThan("datetime", datetime)
+            .orderBy("datetime", Query.Direction.DESCENDING)
+            .limit(10)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val newMessageList = mutableListOf<chatMessage>()
+                chatMessageList.value?.also {
+                    newMessageList.addAll(it)
+                }
+                snapshot.forEach { document ->
+                    val chatMessage = chatMessage(
+                        document.get(chatMessage::uid.name).toString(),
+                        document.get(chatMessage::text.name).toString(),
+                        document.get(chatMessage::isImage.name).toString().toBoolean(),
+                        document.get(chatMessage::datetime.name).toString().toLong()
+                    )
+                    newMessageList.add(chatMessage)
+                }
+                newMessageList.sortBy { it.datetime }
+                chatMessageList.postValue(newMessageList)
             }
     }
 
