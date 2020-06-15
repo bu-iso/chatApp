@@ -189,7 +189,7 @@ class ChatMessageRecyclerViewAdapter(val context: Context) : RecyclerView.Adapte
         holder.apply {
             if (item.isImage) {
                 val storageReference = FirebaseStorage.getInstance().reference.child(item.text)
-                GlideApp.with(context)
+                Glide.with(context)
                     .load(storageReference)
                     .into(imageView)
                 textView.visibility = View.GONE
@@ -236,16 +236,5 @@ class ChatMessageViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView)
         dateView = itemView.findViewById(R.id.date)
         userNameView = itemView.findViewById(R.id.userName)
         imageView = itemView.findViewById(R.id.image)
-    }
-}
-
-@GlideModule
-class MyAppGlideModule: AppGlideModule() {
-
-    override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
-        // Register FirebaseImageLoader to handle StorageReference
-        registry.append(StorageReference::class.java,
-            InputStream::class.java,
-            FirebaseImageLoader.Factory())
     }
 }
