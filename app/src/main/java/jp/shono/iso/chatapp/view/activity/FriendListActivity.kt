@@ -72,7 +72,6 @@ class FriendListActivity : AppCompatActivity() {
 
     private fun initLayout() {
         initRecyclerView()
-        initSwipeRefreshLayout()
     }
 
     private fun initRecyclerView() {
@@ -99,19 +98,6 @@ class FriendListActivity : AppCompatActivity() {
                     }
                 }
             })
-        }
-    }
-
-    private fun initSwipeRefreshLayout() {
-        swipeRefreshLayout.setOnRefreshListener {
-            /*
-            viewModel.chatMessageList.value?.also {
-                val oldestDatetime:Long = it.get(0).datetime
-                viewModel.loadMessages(oldestDatetime)
-                swipeRefreshLayout.isRefreshing = false
-            }
-
-             */
         }
     }
 }

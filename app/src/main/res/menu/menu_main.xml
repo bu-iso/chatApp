@@ -3,8 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="jp.shono.iso.chatApp.view.activity.MainActivity">
     <item
+        android:id="@+id/intent_friends"
+        android:orderInCategory="100"
+        android:title="友達リスト"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/intent_request"
+        android:orderInCategory="100"
+        android:title="友達申請リスト"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_logout"
         android:orderInCategory="100"
         android:title="ログアウト"
         app:showAsAction="never" />
+
+
 </menu>

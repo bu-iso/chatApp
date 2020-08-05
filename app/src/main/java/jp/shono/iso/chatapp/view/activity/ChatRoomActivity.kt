@@ -103,6 +103,15 @@ class ChatRoomActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@ChatRoomActivity)
             adapter = customAdapter
         }
+
+        customAdapter.setOnItemClickListener(object:ChatMessageRecyclerViewAdapter.OnItemClickListener{
+            override fun onItemClickListener(uid: String) {
+                val intent = Intent(this@ChatRoomActivity, ProfileActivity::class.java)
+                intent.putExtra("uid", uid)
+                startActivity(intent)
+            }
+
+        })
     }
 
     private fun initSwipeRefreshLayout() {
@@ -165,6 +174,7 @@ class ChatMessageRecyclerViewAdapter(val context: Context) : RecyclerView.Adapte
     val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.JAPAN)
     var chatMessageList = mutableListOf<chatMessage>()
     val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+    lateinit var listener: OnItemClickListener
 
     fun refresh(newChatMessageList: MutableList<chatMessage>?) {
         newChatMessageList?.also {
@@ -203,11 +213,10 @@ class ChatMessageRecyclerViewAdapter(val context: Context) : RecyclerView.Adapte
             }
             dateView.setText(simpleDateFormat.format(item.datetime))
             db.collection("users")
-                .whereEqualTo(userData::uid.name, item.uid)
-                .limit(1)
+                .document(item.uid)
                 .get()
                 .addOnSuccessListener { documents ->
-                    userNameView.setText("${documents.first().data?.get("name")}")
+                    userNameView.setText("${documents.data?.get("name")}")
                 }
                 .addOnFailureListener {
                     userNameView.setText("不明")
@@ -217,11 +226,22 @@ class ChatMessageRecyclerViewAdapter(val context: Context) : RecyclerView.Adapte
             } else {
                 itemView.setBackgroundColor(Color.WHITE)
             }
+            itemView.setOnClickListener {
+                listener.onItemClickListener(item.uid)
+            }
         }
     }
 
     override fun getItemCount(): Int {
         return chatMessageList.size
+    }
+
+    interface OnItemClickListener{
+        fun onItemClickListener(uid:String)
+    }
+
+    fun setOnItemClickListener(listener: OnItemClickListener){
+        this.listener = listener
     }
 }
 
