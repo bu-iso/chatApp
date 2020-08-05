@@ -6,6 +6,7 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.*
+import android.widget.Switch
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -42,11 +43,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
-        if (id == R.id.action_logout) {
-            FirebaseAuth.getInstance().signOut()
-            val intent = Intent(applicationContext, LoginMenuActivity::class.java)
-            startActivity(intent)
+        when(id) {
+            R.id.action_logout -> {
+                FirebaseAuth.getInstance().signOut()
+                val intent = Intent(applicationContext, LoginMenuActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.intent_request -> {
+                val intent = Intent(applicationContext, RequestListActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.intent_friends -> {
+                val intent = Intent(applicationContext, FriendListActivity::class.java)
+                startActivity(intent)
+            }
         }
+
         return super.onOptionsItemSelected(item)
     }
 
@@ -159,11 +171,10 @@ class ChatRoomListRecyclerViewAdapter(val context: Context) : RecyclerView.Adapt
             titleView.setText(item.title)
             dateView.setText(simpleDateFormat.format(item.datetime))
             db.collection("users")
-                .whereEqualTo(userData::uid.name, item.uid)
-                .limit(1)
+                .document(item.uid)
                 .get()
                 .addOnSuccessListener { documents ->
-                    userNameView.setText("${documents.first().data?.get("name")}")
+                    userNameView.setText("${documents.data?.get("name")}")
                 }
                 .addOnFailureListener {
                     userNameView.setText("不明")

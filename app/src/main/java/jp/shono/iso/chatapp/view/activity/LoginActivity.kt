@@ -67,9 +67,9 @@ class LoginActivity : AppCompatActivity() {
                     // アカウント作成の時は表示名をFirebaseに保存する
                     val name = nameText.text.toString()
                     user?.also {
-                        val userdata = userData(it.uid, name)
+                        val userdata = userData(name)
                         db.collection("users")
-                            .document()
+                            .document(it.uid)
                             .set(userdata)
                     }
 
@@ -78,11 +78,10 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     user?.also {
                         db.collection("users")
-                            .whereEqualTo(userData::uid.name, user.uid)
-                            .limit(1)
+                            .document(user.uid)
                             .get()
                             .addOnSuccessListener {documents ->
-                                saveName("${documents.first().data?.get("name")}")
+                                saveName("${documents.data?.get("name")}")
                             }
                             .addOnFailureListener {}
                     }
