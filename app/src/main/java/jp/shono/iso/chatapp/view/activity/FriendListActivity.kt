@@ -2,6 +2,7 @@ package jp.shono.iso.chatapp.view.activity
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -37,12 +38,10 @@ class FriendListActivity : AppCompatActivity() {
     private fun initViewModel() {
         viewModel = ViewModelProviders.of(this).get(FriendListViewModel::class.java).apply {
             friendList.observe(this@FriendListActivity, androidx.lifecycle.Observer {
-                Log.d("testinfo", "ここまで動いてる1")
                 loadName()
             })
             nameList.observe(this@FriendListActivity, androidx.lifecycle.Observer {
-                Log.d("testinfo", "ここまで動いてる2" + it.size)
-                customAdapter.refresh(it)
+                customAdapter.refresh(it, uidList)
             })
             initFriendList()
         }
@@ -74,20 +73,35 @@ class FriendListActivity : AppCompatActivity() {
                 }
             })
         }
+
+        customAdapter.setOnItemClickListener(object : FriendListRecyclerViewAdapter.OnItemClickListener{
+            override fun onItemClickListener(uid: String) {
+                val intent = Intent(this@FriendListActivity, ProfileActivity::class.java)
+                intent.putExtra("uid", uid)
+                startActivity(intent)
+            }
+        })
     }
 }
 
 class FriendListRecyclerViewAdapter(val context: Context) : RecyclerView.Adapter<FriendListViewHolder>() {
     var nameList = mutableListOf<String>()
-    fun refresh(newFriendList: MutableList<String>?) {
+    var uidList = mutableListOf<String>()
+    lateinit var listener: OnItemClickListener
+    fun refresh(newFriendList: MutableList<String>?, newUidList: MutableList<String>?) {
         newFriendList?.also {
             nameList.apply {
                 clear()
                 addAll(it)
             }
-            notifyDataSetChanged()
-            Log.d("testinfo", "ここまで動いてる3" + nameList.size)
         }
+        newUidList?.also {
+            uidList.apply {
+                clear()
+                addAll(it)
+            }
+        }
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendListViewHolder {
@@ -99,14 +113,25 @@ class FriendListRecyclerViewAdapter(val context: Context) : RecyclerView.Adapter
 
     override fun onBindViewHolder(holder: FriendListViewHolder, position: Int) {
         val item = nameList.get(position)
+        val uid = uidList.get(position)
         holder.apply {
-            Log.d("testinfo", item)
             userNameView.setText(item)
+            this.itemView.setOnClickListener{
+                listener.onItemClickListener(uid)
+            }
         }
     }
 
     override fun getItemCount(): Int {
         return nameList.size
+    }
+
+    interface OnItemClickListener{
+        fun onItemClickListener(uid: String)
+    }
+
+    fun setOnItemClickListener(listener: OnItemClickListener){
+        this.listener = listener
     }
 }
 

@@ -55,7 +55,6 @@ class FriendListViewModel(application: Application) : AndroidViewModel(applicati
                 .get()
                 .addOnSuccessListener {
                     newNameList.add(it.data?.get("name").toString())
-                    Log.d("testinfo", "さて" + it.data?.get("name").toString())
                     nameList.postValue(newNameList)
                 }
         }
