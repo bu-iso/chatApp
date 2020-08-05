@@ -50,7 +50,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             .get()
             .addOnSuccessListener { snapshot ->
                 snapshot.forEach {
-                    if (it.data.get("uid") == targetUid) {
+                    if (it.id == targetUid) {
                         isStranger.postValue(false)
                         buttonText.postValue("友達です")
                         return@addOnSuccessListener
